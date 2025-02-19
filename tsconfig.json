@@ -1,43 +1,17 @@
 {
     "compilerOptions": {
-        "target": "ES2021",
-        "useDefineForClassFields": true,
-        "module": "ESNext",
-        "lib": [
-            "ES2021",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "skipLibCheck": true,
-        "moduleResolution": "Node",
-        "experimentalDecorators": true,
-        "allowImportingTsExtensions": false,
-        "allowSyntheticDefaultImports": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "jsx": "preserve",
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "strictBindCallApply": true,
-        "alwaysStrict": true,
-        "noImplicitThis": true,
-        "noImplicitReturns": true,
-        "noPropertyAccessFromIndexSignature": true,
-        "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": false,// 精准可选
-        "forceConsistentCasingInFileNames": true,
-        "useUnknownInCatchVariables": true,
-        "noImplicitOverride": true,
-        "strictPropertyInitialization": true
+      "module": "commonjs",
+      "target": "es6"
+    },
+    "ts-node": {
+      "compilerOptions": {
+        "module": "commonjs"
+      },
+      "transpileOnly": true,
+      "files": true
     },
     "include": [
-        "src/**/*.ts"
+      "**/*.ts"
     ]
-}
+  }
+  

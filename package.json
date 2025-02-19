@@ -1,5 +1,5 @@
 {
-  "dependencies": {
-    "@protobuf-ts/runtime": "^2.9.4"
+  "scripts": {
+    "build": "npx ts-node ./src/test.ts"
   }
 }

@@ -1,121 +1,7 @@
-import { RepeatType, ScalarType } from '@protobuf-ts/runtime';
-// 类型提取工具
-export type ExtractType<T> =
-    T extends ArrayWrapper<infer V> ? V[] :
-    T extends ValueWrapper<infer U> ? U :
-    never;
-export type ExtractSchema<T> = {
-    [K in keyof T]: ExtractType<T[K]>;
-};
+import { MessageType, RepeatType, ScalarType } from '@protobuf-ts/runtime';
 
-// 类型映射工具
-export function autoType2Class(typename: string) {
-    switch (typename) {
-        case "UInt32Wrapper":
-            return UInt32Wrapper;
-        case "Int32Wrapper":
-            return Int32Wrapper;
-        case "Int64Wrapper":
-            return Int64Wrapper;
-        case "UInt64Wrapper":
-            return UInt64Wrapper;
-        case "StringWrapper":
-            return StringWrapper;
-        case "ArrayWrapper":
-            return ArrayWrapper;
-        default:
-            return UnknowWrapper;
-    }
-}
-// 类型映射工具
-function autoType2Scalar(typename: string) {
-    switch (typename) {
-        case "UInt32Wrapper":
-            return ScalarType.UINT32;
-        case "Int32Wrapper":
-            return ScalarType.INT32;
-        case "Int64Wrapper":
-            return ScalarType.INT64;
-        case "UInt64Wrapper":
-            return ScalarType.UINT64;
-        case "StringWrapper":
-            return ScalarType.STRING;
-        case "ArrayWrapper":
-            return ScalarType.UINT32;
-        case "BytesWrapper":
-            return ScalarType.BYTES;
-        case "BoolWrapper":
-            return ScalarType.BOOL;
-        default:
-            return ScalarType.BYTES;
-    }
-}
-export function autoType2Field(key: string, dataValue: ValueWrapper<unknown>) {
-    let typename = dataValue.getTypeName();
-    let no = dataValue.getFieldId();
-    let opt = dataValue._opt;
-    switch (typename) {
-        case "UInt32Wrapper":
-        case "Int32Wrapper":
-        case "Int64Wrapper":
-        case "UInt64Wrapper":
-        case "BoolWrapper":
-        case "BytesWrapper":
-        case "StringWrapper":
-            return {
-                no: no,
-                name: key,
-                kind: 'scalar',
-                T: autoType2Scalar(typename),
-                opt: opt || false,
-                repeat: RepeatType.NO,
-            };
-        case "ArrayWrapper":
-            let item = dataValue._callback();
-            if ("generateFields" in item) {
-                return {
-                    no: no,
-                    name: key,
-                    kind: 'message',
-                    T: () => item.generateFields(),
-                    opt: opt || false,
-                    repeat: RepeatType.PACKED,
-                };
-            }
-            if (item instanceof ValueWrapper) {
-                let item_type = item.getTypeName();
-                return {
-                    no: no,
-                    name: key,
-                    kind: 'scalar',
-                    T: key,
-                    opt: opt || false,
-                    repeat: item_type === "StringWrapper" || item_type === "BytesWrapper" ? RepeatType.UNPACKED : RepeatType.PACKED,
-                };
-            }
-            throw new Error("ArrayWrapper item type error");
-        default:
-            return UnknowWrapper;
-    }
-}
-// 包装值类型转换类
-export function proxyClass2Value<T extends ValueWrapper<any>>(data: T): ExtractType<T> {
-    return new Proxy(data, {
-        set(target, _prop, value) {
-            const WrapperClass = autoType2Class(target.getTypeName());
-            target.value = new WrapperClass(target._fieldId, value, target._opt) as T;
-            return true;
-        },
-        get(target, prop) {
-            if (prop === "value") {
-                return target.value;
-            }
-            return (target as any)[prop];
-        }
-    }) as unknown as ExtractType<T>;
-}
 // 值包装类
-class ValueWrapper<T> {
+export class ValueWrapper<T> {
     public _value: T;
     public _fieldId: number;
     public _opt: boolean;
@@ -144,7 +30,7 @@ class ValueWrapper<T> {
     }
 
     public getField(key: string) {
-        return autoType2Field(key, this);
+        return autoTypeToField(key, this);
     }
 }
 
@@ -157,45 +43,136 @@ export class UInt64Wrapper extends ValueWrapper<bigint> { }
 export class ArrayWrapper<T> extends ValueWrapper<T[]> { }
 export class BoolWrapper extends ValueWrapper<boolean> { }
 export class BytesWrapper extends ValueWrapper<Uint8Array> { }
-export class UnknowWrapper extends ValueWrapper<any> { }
+export class UnknownWrapper extends ValueWrapper<any> { }
+
+// 类型提取工具
+export type ExtractType<T> =
+    T extends ArrayWrapper<infer V> ? V[] :
+    T extends ValueWrapper<infer U> ? U :
+    T extends ProtoBufBase ? ExtractSchema<T> :
+    T;
+
+export type ExtractSchema<T> = Omit<{
+    [K in keyof T]: T[K] extends ProtoBufBase ? ExtractSchema<T[K]> : ExtractType<T[K]>;
+}, keyof ProtoBufBase>;
+
+// 类型映射工具
+const typeMap: { [key: string]: any } = {
+    "UInt32Wrapper": UInt32Wrapper,
+    "Int32Wrapper": Int32Wrapper,
+    "Int64Wrapper": Int64Wrapper,
+    "UInt64Wrapper": UInt64Wrapper,
+    "StringWrapper": StringWrapper,
+    "ArrayWrapper": ArrayWrapper,
+    "BoolWrapper": BoolWrapper,
+    "BytesWrapper": BytesWrapper,
+};
+
+const scalarMap: { [key: string]: ScalarType } = {
+    "UInt32Wrapper": ScalarType.UINT32,
+    "Int32Wrapper": ScalarType.INT32,
+    "Int64Wrapper": ScalarType.INT64,
+    "UInt64Wrapper": ScalarType.UINT64,
+    "StringWrapper": ScalarType.STRING,
+    "ArrayWrapper": ScalarType.UINT32,
+    "BytesWrapper": ScalarType.BYTES,
+    "BoolWrapper": ScalarType.BOOL,
+};
+
+export function autoTypeToClass(typeName: string) {
+    return typeMap[typeName] || UnknownWrapper;
+}
+
+function autoTypeToScalar(typeName: string) {
+    return scalarMap[typeName] || ScalarType.BYTES;
+}
 
 // 默认值创建构造类
 export function PBArray<T>(field: number = 0, data: T, opt: boolean = false) {
-    return proxyClass2Value(new ArrayWrapper<T>(field, [], opt, () => { return data }));
+    return new ArrayWrapper<T>(field, [], opt, () => data) as unknown as ExtractType<T>;
 }
 export function PBUint32(field: number = 0, opt: boolean = false) {
-    return proxyClass2Value(new UInt32Wrapper(field, 0, opt));
+    return new UInt32Wrapper(field, 0, opt) as unknown as number;
 }
 export function PBInt32(field: number = 0, opt: boolean = false) {
-    return proxyClass2Value(new Int32Wrapper(field, 0, opt));
+    return new Int32Wrapper(field, 0, opt) as unknown as number;
 }
 export function PBInt64(field: number = 0, opt: boolean = false) {
-    return proxyClass2Value(new Int64Wrapper(field, BigInt(0), opt));
+    return new Int64Wrapper(field, BigInt(0), opt) as unknown as bigint;
 }
 export function PBUint64(field: number = 0, opt: boolean = false) {
-    return proxyClass2Value(new UInt64Wrapper(field, BigInt(0), opt));
+    return new UInt64Wrapper(field, BigInt(0), opt) as unknown as bigint;
 }
 export function PBString(field: number = 0, opt: boolean = false) {
-    return proxyClass2Value(new StringWrapper(field, "", opt));
+    return new StringWrapper(field, "", opt) as unknown as string;
 }
+export function PBBool(field: number = 0, opt: boolean = false) {
+    return new BoolWrapper(field, false, opt) as unknown as boolean;
+}
+export function PBBytes(field: number = 0, opt: boolean = false) {
+    return new BytesWrapper(field, new Uint8Array(), opt) as unknown as Uint8Array;
+}
+
+export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
+    const typeName = dataValue.getTypeName();
+    const no = dataValue.getFieldId();
+    const opt = dataValue._opt;
+    if (typeName === "ArrayWrapper") {
+        const item = dataValue._callback();
+        if (item instanceof ProtoBufBase) {
+            return {
+                no,
+                name: key,
+                kind: 'message',
+                T: () => new MessageType(key, item.generateFields()),
+                opt: opt || false,
+                repeat: RepeatType.PACKED,
+            };
+        }
+        if (item instanceof ValueWrapper) {
+            const itemType = item.getTypeName();
+            return {
+                no,
+                name: key,
+                kind: 'scalar',
+                T: key,
+                opt: opt || false,
+                repeat: itemType === "StringWrapper" || itemType === "BytesWrapper" ? RepeatType.UNPACKED : RepeatType.PACKED,
+            };
+        }
+        throw new Error("ArrayWrapper item type error");
+    }
+    return {
+        no,
+        name: key,
+        kind: 'scalar',
+        T: autoTypeToScalar(typeName),
+        opt: opt || false,
+        repeat: RepeatType.NO,
+    };
+}
+
+
 
 // Protobuf标记类
 export class ProtoBufBase {
-    [key: string]: any;
-    public field: number = 0;
+    public _fieldId: number = 0;
+
     //默认标记类
     public generateFields(): any {
         const fields: Array<any> = [];
-        for (const key of Object.keys(this)) {
-            if (this[key] instanceof ValueWrapper) {
-                fields.push((this[key] as ValueWrapper<any>).getField(key));
+        for (const innerKey of Object.keys(this)) {
+            const key = '_' + innerKey;
+            const value = (this as any)[key];
+            if (value instanceof ValueWrapper) {
+                fields.push(value.getField(innerKey));
             }
-            if (this[key] instanceof ProtoBufBase) {
+            if (value instanceof ProtoBufBase) {
                 fields.push({
-                    no: (this[key] as ProtoBufBase).field,
-                    name: key,
+                    no: value._fieldId,
+                    name: innerKey,
                     kind: 'message',
-                    T: () => (this[key] as ProtoBufBase).generateFields(),
+                    T: () => new MessageType(key, value.generateFields()),
                     repeat: RepeatType.NO,
                     opt: false,
                 });
@@ -203,19 +180,119 @@ export class ProtoBufBase {
         }
         return fields;
     }
-    public encode(): Uint8Array {
-        return new Uint8Array();
+
+    public assignFields(fields: any) {
+        for (const innerKey of Object.keys(this)) {
+            const key = '_' + innerKey;
+            let value = (this as any)[key];
+            if (value instanceof ValueWrapper) {
+                const fieldValue = fields[innerKey];
+                if (fieldValue !== undefined) {
+                    value.value = fieldValue;
+                }
+            }
+            if (value instanceof ProtoBufBase) {
+                const fieldValue = fields[innerKey];
+                if (fieldValue !== undefined) {
+                    value.assignFields(fieldValue);
+                }
+            }
+        }
     }
-    public decode(): ProtoBufBase {
+
+    public toObject(): any {
+        const obj: any = {};
+        for (const innerKey of Object.keys(this)) {
+            const key = '_' + innerKey;
+            const value = (this as any)[key];
+            if (value) {
+                if (value instanceof ValueWrapper) {
+                    obj[innerKey] = value.value;
+                }
+                if (value instanceof ProtoBufBase) {
+                    obj[innerKey] = value.toObject();
+                }
+            }
+        }
+        return obj;
+    }
+
+    public encode(): Uint8Array {
+        const pbData = new MessageType("message", this.generateFields()).toBinary(this.toObject());
+        return pbData;
+    }
+
+    public decode(data: Uint8Array): ProtoBufBase {
+        const pbData = new MessageType("message", this.generateFields()).fromBinary(data);
+        Object.assign(this, pbData);
         return this;
     }
 }
 
-// 代理创建工具
-export function ProtoBuf<T extends ProtoBufBase>(field: number, valueClass: new () => T): T
-export function ProtoBuf<T extends ProtoBufBase>(valueClass: new () => T): T
-export function ProtoBuf<T extends ProtoBufBase>(data: number | (new () => T), valueClass?: new () => T): T {
-    let dataclass = valueClass ? new valueClass() : new (data as new () => T)();
-    dataclass.field = typeof data === "number" ? data : 0;
-    return dataclass;
+export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T) {
+    return new Proxy(protobuf, {
+        set(target, prop, value) {
+            const targetValue = (target as any)[prop];
+            if (targetValue instanceof ValueWrapper) {
+                const WrapperClass = autoTypeToClass(targetValue.getTypeName());
+                (target as any)[prop] = new WrapperClass(targetValue._fieldId, value, targetValue._opt);
+                return true;
+            }
+            (target as any)[prop] = value;
+            return true;
+        },
+        get(target, prop) {
+            if (typeof prop === "string" && prop.startsWith("_")) {
+                const key = prop.slice(1);
+                if ((target as any)[key]) {
+                    return (target as any)[key];
+                }
+            }
+            const targetValue = (target as any)[prop];
+            if (targetValue instanceof ValueWrapper) {
+                return targetValue.value;
+            }
+            return targetValue;
+        }
+    }) as T;
 }
+
+// 代理创建工具
+export function ProtoBuf<T extends ProtoBufBase>(field: number, valueClass: new () => T): T;
+export function ProtoBuf<T extends ProtoBufBase>(valueClass: new () => T): T;
+export function ProtoBuf<T extends ProtoBufBase>(data: number | (new () => T), valueClass?: new () => T): T {
+    const dataClass = proxyClassProtobuf(valueClass ? new valueClass() : new (data as new () => T)());
+    dataClass._fieldId = typeof data === "number" ? data : 0;
+    return dataClass;
+}
+
+export function ProtoBufEx<T extends ProtoBufBase>(valueClass: new () => T, value: ExtractSchema<T>): T {
+    const dataClass = proxyClassProtobuf(new valueClass());
+    dataClass.assignFields(value);
+    return dataClass;
+}
+
+// 演示代码
+class ProtoBufDataInnerClass extends ProtoBufBase {
+    data = PBString(1);
+    test = PBUint32(2);
+}
+
+class ProtoBufDataClass extends ProtoBufBase {
+    uin = PBUint32(1);
+    inner = ProtoBuf(2, ProtoBufDataInnerClass);
+}
+
+export function testPb() {
+    const test = ProtoBufEx(ProtoBufDataClass, {
+        uin: 100,
+        inner: {
+            data: "test",
+            test: 300
+        }
+    });
+    test.uin = 100;
+    console.log(test);
+    console.log(Buffer.from(test.encode()).toString('hex'));
+}
+testPb();
