@@ -88,7 +88,7 @@ function autoTypeToScalar(typeName: string) {
 
 // 默认值创建构造类
 export function PBArray<T>(field: number = 0, data: T, opt: boolean = false) {
-    return new ArrayWrapper<T>(field, [], opt, () => data) as unknown as ExtractType<T>;
+    return new ArrayWrapper<T>(field, [], opt, () => data) as unknown as Omit<T, keyof ProtoBufBase>[];
 }
 export function PBUint32(field: number = 0, opt: boolean = false) {
     return new UInt32Wrapper(field, 0, opt) as unknown as number;

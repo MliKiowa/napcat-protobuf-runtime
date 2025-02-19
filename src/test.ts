@@ -19,7 +19,10 @@ export function testPb() {
             data: "test",
             test: 300
         },
-        list: []
+        list: [{
+            data: "test",
+            test: 0
+        }]
     });
     test.uin = 100;
     console.log(Buffer.from(test.encode()).toString('hex'));
