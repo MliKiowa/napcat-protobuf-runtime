@@ -74,7 +74,6 @@ const scalarMap: { [key: string]: ScalarType } = {
     "Int64Wrapper": ScalarType.INT64,
     "UInt64Wrapper": ScalarType.UINT64,
     "StringWrapper": ScalarType.STRING,
-    "ArrayWrapper": ScalarType.UINT32,
     "BytesWrapper": ScalarType.BYTES,
     "BoolWrapper": ScalarType.BOOL,
 };
@@ -151,8 +150,6 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
         repeat: RepeatType.NO,
     };
 }
-
-
 
 // Protobuf标记类
 export class ProtoBufBase {
@@ -265,9 +262,15 @@ export function ProtoBuf<T extends ProtoBufBase>(data: number | (new () => T), v
     dataClass._fieldId = typeof data === "number" ? data : 0;
     return dataClass;
 }
-
 export function ProtoBufEx<T extends ProtoBufBase>(valueClass: new () => T, value: ExtractSchema<T>): T {
     const dataClass = proxyClassProtobuf(new valueClass());
     dataClass.assignFields(value);
     return dataClass;
+}
+export function ProtoBufQuick<T>(pb: T, data: T) {
+    let protobuf = class extends ProtoBufBase { };
+    const instance = ProtoBuf(protobuf);
+    Object.assign(instance, pb);
+    instance.assignFields(data);
+    return instance;
 }
