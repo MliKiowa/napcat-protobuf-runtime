@@ -1,9 +1,20 @@
 {
+  "name": "napcat.protobuf",
+  "type": "module",
+  "version": "0.0.0",
   "scripts": {
-    "build": "npx ts-node ./src/test.ts"
+    "build:dev": "vite build --mode development",
+    "build:prod": "vite build --mode production"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@types/node": "^20.11.30",
+    "@types/uuid": "^10.0.0",
+    "vite": "^5.2.6",
+    "vite-plugin-cp": "^4.0.8",
+    "vite-plugin-dts": "^3.9.1"
   },
   "dependencies": {
-    "@protobuf-ts/runtime": "^2.9.4",
-    "ts-node": "^10.9.2"
+    "@protobuf-ts/runtime": "^2.9.4"
   }
 }
