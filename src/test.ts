@@ -39,7 +39,7 @@ export function testPb() {
     console.log(Buffer.from(test.encode()).toString('hex'));
     let data = Buffer.from('086412090a047465737410ac021a080a047465737410051a090a0574657374311002220d0a04746573740a0574657374312a070a057465737435', 'hex');
     test.decode(new Uint8Array(data));
-    console.log(test.toObject());
+    console.log(JSON.stringify(test.toObject()));
     console.log(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode());
 }
 
