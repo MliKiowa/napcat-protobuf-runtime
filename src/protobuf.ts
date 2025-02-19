@@ -119,6 +119,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
     if (typeName === "ArrayWrapper") {
         const item = dataValue._callback();
         if (item instanceof ProtoBufBase) {
+            console.log(key,item.generateFields());
             return {
                 no,
                 name: key,
@@ -134,7 +135,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
                 no,
                 name: key,
                 kind: 'scalar',
-                T: key,
+                T: autoTypeToScalar(key),
                 opt: opt || false,
                 repeat: itemType === "StringWrapper" || itemType === "BytesWrapper" ? RepeatType.UNPACKED : RepeatType.PACKED,
             };
