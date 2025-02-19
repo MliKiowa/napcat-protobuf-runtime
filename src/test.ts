@@ -18,25 +18,28 @@ export function testPb() {
     const test = ProtoBufEx(ProtoBufDataClass, {
         uin: 100,
         inner: {
-            data: "test",
+            data: "x",
             test: 300
         },
         list: [{
-            data: "test",
+            data: "xx",
             test: 5
         }, {
-            data: "test1",
+            data: "xxx",
             test: 2
         }],
         listinner: [{
-            data: ["test", "test1"]
+            data: ["x", "xxxx"]
         }],
         listquick: [{
-            data: "test5"
+            data: "xxxxx"
         }]
     });
-    test.uin = 100;
+    test.uin = 200;
     console.log(Buffer.from(test.encode()).toString('hex'));
+    let data = Buffer.from('086412090a047465737410ac021a080a047465737410051a090a0574657374311002220d0a04746573740a0574657374312a070a057465737435', 'hex');
+    test.decode(new Uint8Array(data));
+    console.log(test.toObject());
     console.log(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode());
 }
 
