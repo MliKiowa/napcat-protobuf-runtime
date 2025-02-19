@@ -33,8 +33,8 @@ export class ValueWrapper<T> {
         return autoTypeToField(key, this);
     }
 }
-
-// 值衍生类
+export class DoubleWrapper extends ValueWrapper<number> { }
+export class FloatWrapper extends ValueWrapper<number> { }
 export class StringWrapper extends ValueWrapper<string> { }
 export class UInt32Wrapper extends ValueWrapper<number> { }
 export class Int32Wrapper extends ValueWrapper<number> { }
@@ -43,6 +43,12 @@ export class UInt64Wrapper extends ValueWrapper<bigint> { }
 export class ArrayWrapper<T> extends ValueWrapper<T[]> { }
 export class BoolWrapper extends ValueWrapper<boolean> { }
 export class BytesWrapper extends ValueWrapper<Uint8Array> { }
+export class Fixed64Wrapper extends ValueWrapper<bigint> { }
+export class Fixed32Wrapper extends ValueWrapper<number> { }
+export class SFixed32Wrapper extends ValueWrapper<number> { }
+export class SFixed64Wrapper extends ValueWrapper<bigint> { }
+export class SInt32Wrapper extends ValueWrapper<number> { }
+export class SInt64Wrapper extends ValueWrapper<bigint> { }
 export class UnknownWrapper extends ValueWrapper<any> { }
 
 // 类型提取工具
@@ -66,6 +72,15 @@ const typeMap: { [key: string]: any } = {
     "ArrayWrapper": ArrayWrapper,
     "BoolWrapper": BoolWrapper,
     "BytesWrapper": BytesWrapper,
+    "DoubleWrapper": DoubleWrapper,
+    "FloatWrapper": FloatWrapper,
+    "Fixed64Wrapper": Fixed64Wrapper,
+    "Fixed32Wrapper": Fixed32Wrapper,
+    "SFixed32Wrapper": SFixed32Wrapper,
+    "SFixed64Wrapper": SFixed64Wrapper,
+    "SInt32Wrapper": SInt32Wrapper,
+    "SInt64Wrapper": SInt64Wrapper,
+    "UnknownWrapper": UnknownWrapper,
 };
 
 const scalarMap: { [key: string]: ScalarType } = {
@@ -76,6 +91,15 @@ const scalarMap: { [key: string]: ScalarType } = {
     "StringWrapper": ScalarType.STRING,
     "BytesWrapper": ScalarType.BYTES,
     "BoolWrapper": ScalarType.BOOL,
+    "DoubleWrapper": ScalarType.DOUBLE,
+    "FloatWrapper": ScalarType.FLOAT,
+    "Fixed64Wrapper": ScalarType.FIXED64,
+    "Fixed32Wrapper": ScalarType.FIXED32,
+    "SFixed32Wrapper": ScalarType.SFIXED32,
+    "SFixed64Wrapper": ScalarType.SFIXED64,
+    "SInt32Wrapper": ScalarType.SINT32,
+    "SInt64Wrapper": ScalarType.SINT64,
+    "UnknownWrapper": ScalarType.BYTES,
 };
 
 export function autoTypeToClass(typeName: string) {
@@ -90,6 +114,15 @@ function autoTypeToScalar(typeName: string) {
 export function PBArray<T>(field: number = 0, data: T, opt: boolean = false) {
     return new ArrayWrapper<T>(field, [], opt, () => data) as unknown as Omit<T, keyof ProtoBufBase>[];
 }
+export function PBDouble(field: number = 0, opt: boolean = false) {
+    return new DoubleWrapper(field, 0, opt) as unknown as number;
+}
+export function PBFloat(field: number = 0, opt: boolean = false) {
+    return new FloatWrapper(field, 0, opt) as unknown as number;
+}
+export function PBString(field: number = 0, opt: boolean = false) {
+    return new StringWrapper(field, "", opt) as unknown as string;
+}
 export function PBUint32(field: number = 0, opt: boolean = false) {
     return new UInt32Wrapper(field, 0, opt) as unknown as number;
 }
@@ -102,15 +135,31 @@ export function PBInt64(field: number = 0, opt: boolean = false) {
 export function PBUint64(field: number = 0, opt: boolean = false) {
     return new UInt64Wrapper(field, BigInt(0), opt) as unknown as bigint;
 }
-export function PBString(field: number = 0, opt: boolean = false) {
-    return new StringWrapper(field, "", opt) as unknown as string;
-}
 export function PBBool(field: number = 0, opt: boolean = false) {
     return new BoolWrapper(field, false, opt) as unknown as boolean;
 }
 export function PBBytes(field: number = 0, opt: boolean = false) {
     return new BytesWrapper(field, new Uint8Array(), opt) as unknown as Uint8Array;
 }
+export function PBFixed64(field: number = 0, opt: boolean = false) {
+    return new Fixed64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+}
+export function PBFixed32(field: number = 0, opt: boolean = false) {
+    return new Fixed32Wrapper(field, 0, opt) as unknown as number;
+}
+export function PBSFixed32(field: number = 0, opt: boolean = false) {
+    return new SFixed32Wrapper(field, 0, opt) as unknown as number;
+}
+export function PBSFixed64(field: number = 0, opt: boolean = false) {
+    return new SFixed64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+}
+export function PBSInt32(field: number = 0, opt: boolean = false) {
+    return new SInt32Wrapper(field, 0, opt) as unknown as number;
+}
+export function PBSInt64(field: number = 0, opt: boolean = false) {
+    return new SInt64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+}
+
 
 export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
     const typeName = dataValue.getTypeName();
