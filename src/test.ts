@@ -10,7 +10,7 @@ class ProtoBufDataClass extends ProtoBufBase {
     uin = PBUint32(1);
     inner = ProtoBuf(2, ProtoBufDataInnerClass);
     list = PBArray(3, ProtoBuf(ProtoBufDataInnerClass));
-    //listinner = PBArray(4, ProtoBuf(class extends ProtoBufBase { data = PBArray(1, PBString()); }));
+    listinner = PBArray(4, ProtoBuf(class extends ProtoBufBase { data = PBArray(1, PBString()); }));
 }
 
 export function testPb() {
@@ -26,6 +26,9 @@ export function testPb() {
         }, {
             data: "test1",
             test: 2
+        }],
+        listinner: [{
+            data: ["test", "test1"]
         }]
     });
     test.uin = 100;
