@@ -36,7 +36,6 @@ export function testPb() {
         }]
     });
     test.uin = 100;
-    console.log(test.generateFields(), JSON.stringify(test.toObject()));
     console.log(Buffer.from(test.encode()).toString('hex'));
     console.log(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode());
 }
