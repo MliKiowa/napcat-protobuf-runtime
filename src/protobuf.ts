@@ -274,3 +274,6 @@ export function ProtoBufQuick<T>(pb: T, data: T) {
     instance.assignFields(data);
     return instance;
 }
+export function ProtoBufIn<T>(data: T) {
+    return proxyClassProtobuf(new class extends ProtoBufBase { constructor() { super(); Object.assign(this, data); } } as T & ProtoBufBase);
+}

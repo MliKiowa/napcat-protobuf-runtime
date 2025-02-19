@@ -1,4 +1,4 @@
-import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufEx, ProtoBufQuick } from "./protobuf";
+import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufEx, ProtoBufIn, ProtoBufQuick } from "./protobuf";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
@@ -11,6 +11,7 @@ class ProtoBufDataClass extends ProtoBufBase {
     inner = ProtoBuf(2, ProtoBufDataInnerClass);
     list = PBArray(3, ProtoBuf(ProtoBufDataInnerClass));
     listinner = PBArray(4, ProtoBuf(class extends ProtoBufBase { data = PBArray(1, PBString()); }));
+    listquick = PBArray(5, ProtoBufIn({ data: PBString(1) }));
 }
 
 export function testPb() {
@@ -29,6 +30,9 @@ export function testPb() {
         }],
         listinner: [{
             data: ["test", "test1"]
+        }],
+        listquick: [{
+            data: "test5"
         }]
     });
     test.uin = 100;
