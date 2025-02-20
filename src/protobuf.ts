@@ -6,8 +6,8 @@ export class ValueWrapper<T> {
     public _value: T;
     public _fieldId: number;
     public _opt: boolean;
-    public _callback: Function;
-    constructor(field: number, value: T, opt: boolean, callback: Function = () => { }) {
+    public _callback?: Function;
+    constructor(field: number, value: T, opt: boolean, callback?: Function) {
         this._value = value;
         this._fieldId = field;
         this._opt = opt;
@@ -187,7 +187,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>): 
     const no = dataValue.getFieldId();
     const opt = dataValue._opt;
     if (typeName === NameDataKeys.ArrayWrapper) {
-        const item = dataValue._callback();
+        const item = dataValue._callback?.();
         if (item instanceof ProtoBufBase) {
             return {
                 no,
