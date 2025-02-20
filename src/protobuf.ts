@@ -271,7 +271,7 @@ export class ProtoBufBase {
         }
     }
 
-    public toObject(): { [key: string]: unknown } {
+    public toObject(): Omit<this, keyof ProtoBufBase> {
         const obj: { [key: string]: unknown } = {};
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
@@ -285,7 +285,7 @@ export class ProtoBufBase {
                 }
             }
         }
-        return obj;
+        return obj as Omit<this, keyof ProtoBufBase>;
     }
 
     public encode(): Uint8Array {
