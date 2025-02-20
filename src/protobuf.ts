@@ -49,7 +49,7 @@ export class SFixed32Wrapper extends ValueWrapper<number> { }
 export class SFixed64Wrapper extends ValueWrapper<bigint> { }
 export class SInt32Wrapper extends ValueWrapper<number> { }
 export class SInt64Wrapper extends ValueWrapper<bigint> { }
-export class UnknownWrapper extends ValueWrapper<any> { }
+export class UnknownWrapper extends ValueWrapper<unknown> { }
 
 // 类型提取工具
 export type ExtractType<T> =
@@ -295,23 +295,23 @@ export class ProtoBufBase {
 export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T) {
     return new Proxy(protobuf, {
         set(target, prop, value) {
-            const targetValue = (target as any)[prop];
+            const targetValue = target[prop as keyof T];
             if (targetValue instanceof ValueWrapper) {
                 const WrapperClass = autoTypeToClass(targetValue.getTypeName());
-                (target as any)[prop] = new WrapperClass(targetValue._fieldId, value, targetValue._opt);
+                target[prop as keyof T] = new WrapperClass(targetValue._fieldId, value, targetValue._opt);
                 return true;
             }
-            (target as any)[prop] = value;
+            target [prop as keyof T] = value;
             return true;
         },
         get(target, prop) {
             if (typeof prop === "string" && prop.startsWith("_")) {
                 const key = prop.slice(1);
-                if ((target as any)[key]) {
-                    return (target as any)[key];
+                if (target[key as keyof T]) {
+                    return target[key as keyof T];
                 }
             }
-            const targetValue = (target as any)[prop];
+            const targetValue = target[prop as keyof T];
             if (targetValue instanceof ValueWrapper) {
                 return targetValue.value;
             }
