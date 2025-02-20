@@ -1,5 +1,5 @@
 import { MessageType, RepeatType, ScalarType } from '@protobuf-ts/runtime';
-
+import type { PartialFieldInfo } from '@protobuf-ts/runtime';
 // 值包装类
 export class ValueWrapper<T> {
     public _value: T;
@@ -29,27 +29,28 @@ export class ValueWrapper<T> {
         return this._fieldId;
     }
 
-    public getField(key: string) {
+    public getField(key: string): PartialFieldInfo {
         return autoTypeToField(key, this);
     }
 }
-export class DoubleWrapper extends ValueWrapper<number> { }
-export class FloatWrapper extends ValueWrapper<number> { }
-export class StringWrapper extends ValueWrapper<string> { }
-export class UInt32Wrapper extends ValueWrapper<number> { }
-export class Int32Wrapper extends ValueWrapper<number> { }
-export class Int64Wrapper extends ValueWrapper<bigint> { }
-export class UInt64Wrapper extends ValueWrapper<bigint> { }
-export class ArrayWrapper<T> extends ValueWrapper<T[]> { }
-export class BoolWrapper extends ValueWrapper<boolean> { }
-export class BytesWrapper extends ValueWrapper<Uint8Array> { }
-export class Fixed64Wrapper extends ValueWrapper<bigint> { }
-export class Fixed32Wrapper extends ValueWrapper<number> { }
-export class SFixed32Wrapper extends ValueWrapper<number> { }
-export class SFixed64Wrapper extends ValueWrapper<bigint> { }
-export class SInt32Wrapper extends ValueWrapper<number> { }
-export class SInt64Wrapper extends ValueWrapper<bigint> { }
-export class UnknownWrapper extends ValueWrapper<unknown> { }
+
+export class DoubleWrapper extends ValueWrapper<number> { getTypeName(): string { return "DoubleWrapper"; } }
+export class FloatWrapper extends ValueWrapper<number> { getTypeName(): string { return "FloatWrapper"; } }
+export class StringWrapper extends ValueWrapper<string> { getTypeName(): string { return "StringWrapper"; } }
+export class UInt32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "UInt32Wrapper"; } }
+export class Int32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "Int32Wrapper"; } }
+export class Int64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "Int64Wrapper"; } }
+export class UInt64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "UInt64Wrapper"; } }
+export class ArrayWrapper<T> extends ValueWrapper<T[]> { getTypeName(): string { return "ArrayWrapper"; } }
+export class BoolWrapper extends ValueWrapper<boolean> { getTypeName(): string { return "BoolWrapper"; } }
+export class BytesWrapper extends ValueWrapper<Uint8Array> { getTypeName(): string { return "BytesWrapper"; } }
+export class Fixed64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "Fixed64Wrapper"; } }
+export class Fixed32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "Fixed32Wrapper"; } }
+export class SFixed32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "SFixed32Wrapper"; } }
+export class SFixed64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "SFixed64Wrapper"; } }
+export class SInt32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "SInt32Wrapper"; } }
+export class SInt64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "SInt64Wrapper"; } }
+export class UnknownWrapper extends ValueWrapper<unknown> { getTypeName(): string { return "UnknownWrapper"; } }
 
 // 类型提取工具
 export type ExtractType<T> =
@@ -61,62 +62,65 @@ export type ExtractType<T> =
 export type ExtractSchema<T> = Omit<{
     [K in keyof T]: T[K] extends ProtoBufBase ? ExtractSchema<T[K]> : ExtractType<T[K]>;
 }, keyof ProtoBufBase>;
-const NameData = {
-    "UInt32Wrapper": new UInt32Wrapper(0, 0, false).getTypeName(),
-    "Int32Wrapper": new Int32Wrapper(0, 0, false).getTypeName(),
-    "Int64Wrapper": new Int64Wrapper(0, BigInt(0), false).getTypeName(),
-    "UInt64Wrapper": new UInt64Wrapper(0, BigInt(0), false).getTypeName(),
-    "StringWrapper": new StringWrapper(0, "", false).getTypeName(),
-    "ArrayWrapper": new ArrayWrapper(0, [], false).getTypeName(),
-    "BoolWrapper": new BoolWrapper(0, false, false).getTypeName(),
-    "BytesWrapper": new BytesWrapper(0, new Uint8Array(), false).getTypeName(),
-    "DoubleWrapper": new DoubleWrapper(0, 0, false).getTypeName(),
-    "FloatWrapper": new FloatWrapper(0, 0, false).getTypeName(),
-    "Fixed64Wrapper": new Fixed64Wrapper(0, BigInt(0), false).getTypeName(),
-    "Fixed32Wrapper": new Fixed32Wrapper(0, 0, false).getTypeName(),
-    "SFixed32Wrapper": new SFixed32Wrapper(0, 0, false).getTypeName(),
-    "SFixed64Wrapper": new SFixed64Wrapper(0, BigInt(0), false).getTypeName(),
-    "SInt32Wrapper": new SInt32Wrapper(0, 0, false).getTypeName(),
-    "SInt64Wrapper": new SInt64Wrapper(0, BigInt(0), false).getTypeName(),
-    "UnknownWrapper": new UnknownWrapper(0, undefined, false).getTypeName(),
+
+const NameDataKeys = {
+    "UInt32Wrapper": "UInt32Wrapper",
+    "Int32Wrapper": "Int32Wrapper",
+    "Int64Wrapper": "Int64Wrapper",
+    "UInt64Wrapper": "UInt64Wrapper",
+    "StringWrapper": "StringWrapper",
+    "ArrayWrapper": "ArrayWrapper",
+    "BoolWrapper": "BoolWrapper",
+    "BytesWrapper": "BytesWrapper",
+    "DoubleWrapper": "DoubleWrapper",
+    "FloatWrapper": "FloatWrapper",
+    "Fixed64Wrapper": "Fixed64Wrapper",
+    "Fixed32Wrapper": "Fixed32Wrapper",
+    "SFixed32Wrapper": "SFixed32Wrapper",
+    "SFixed64Wrapper": "SFixed64Wrapper",
+    "SInt32Wrapper": "SInt32Wrapper",
+    "SInt64Wrapper": "SInt64Wrapper",
+    "UnknownWrapper": "UnknownWrapper",
 }
+
 // 类型映射工具
 const typeMap: { [key: string]: any } = {
-    [NameData.UInt32Wrapper]: UInt32Wrapper,
-    [NameData.Int32Wrapper]: Int32Wrapper,
-    [NameData.Int64Wrapper]: Int64Wrapper,
-    [NameData.UInt64Wrapper]: UInt64Wrapper,
-    [NameData.StringWrapper]: StringWrapper,
-    [NameData.ArrayWrapper]: ArrayWrapper,
-    [NameData.BoolWrapper]: BoolWrapper,
-    [NameData.BytesWrapper]: BytesWrapper,
-    [NameData.DoubleWrapper]: DoubleWrapper,
-    [NameData.FloatWrapper]: FloatWrapper,
-    [NameData.Fixed64Wrapper]: Fixed64Wrapper,
-    [NameData.Fixed32Wrapper]: Fixed32Wrapper,
-    [NameData.SFixed32Wrapper]: SFixed32Wrapper,
-    [NameData.SFixed64Wrapper]: SFixed64Wrapper,
-    [NameData.SInt32Wrapper]: SInt32Wrapper,
-    [NameData.SInt64Wrapper]: SInt64Wrapper,
-    [NameData.UnknownWrapper]: UnknownWrapper,
+    [NameDataKeys.UInt32Wrapper]: UInt32Wrapper,
+    [NameDataKeys.Int32Wrapper]: Int32Wrapper,
+    [NameDataKeys.Int64Wrapper]: Int64Wrapper,
+    [NameDataKeys.UInt64Wrapper]: UInt64Wrapper,
+    [NameDataKeys.StringWrapper]: StringWrapper,
+    [NameDataKeys.ArrayWrapper]: ArrayWrapper,
+    [NameDataKeys.BoolWrapper]: BoolWrapper,
+    [NameDataKeys.BytesWrapper]: BytesWrapper,
+    [NameDataKeys.DoubleWrapper]: DoubleWrapper,
+    [NameDataKeys.FloatWrapper]: FloatWrapper,
+    [NameDataKeys.Fixed64Wrapper]: Fixed64Wrapper,
+    [NameDataKeys.Fixed32Wrapper]: Fixed32Wrapper,
+    [NameDataKeys.SFixed32Wrapper]: SFixed32Wrapper,
+    [NameDataKeys.SFixed64Wrapper]: SFixed64Wrapper,
+    [NameDataKeys.SInt32Wrapper]: SInt32Wrapper,
+    [NameDataKeys.SInt64Wrapper]: SInt64Wrapper,
+    [NameDataKeys.UnknownWrapper]: UnknownWrapper,
 };
+
 const scalarMap: { [key: string]: ScalarType } = {
-    [NameData.UInt32Wrapper]: ScalarType.UINT32,
-    [NameData.Int32Wrapper]: ScalarType.INT32,
-    [NameData.Int64Wrapper]: ScalarType.INT64,
-    [NameData.UInt64Wrapper]: ScalarType.UINT64,
-    [NameData.StringWrapper]: ScalarType.STRING,
-    [NameData.BytesWrapper]: ScalarType.BYTES,
-    [NameData.BoolWrapper]: ScalarType.BOOL,
-    [NameData.DoubleWrapper]: ScalarType.DOUBLE,
-    [NameData.FloatWrapper]: ScalarType.FLOAT,
-    [NameData.Fixed64Wrapper]: ScalarType.FIXED64,
-    [NameData.Fixed32Wrapper]: ScalarType.FIXED32,
-    [NameData.SFixed32Wrapper]: ScalarType.SFIXED32,
-    [NameData.SFixed64Wrapper]: ScalarType.SFIXED64,
-    [NameData.SInt32Wrapper]: ScalarType.SINT32,
-    [NameData.SInt64Wrapper]: ScalarType.SINT64,
-    [NameData.UnknownWrapper]: ScalarType.BYTES,
+    [NameDataKeys.UInt32Wrapper]: ScalarType.UINT32,
+    [NameDataKeys.Int32Wrapper]: ScalarType.INT32,
+    [NameDataKeys.Int64Wrapper]: ScalarType.INT64,
+    [NameDataKeys.UInt64Wrapper]: ScalarType.UINT64,
+    [NameDataKeys.StringWrapper]: ScalarType.STRING,
+    [NameDataKeys.BytesWrapper]: ScalarType.BYTES,
+    [NameDataKeys.BoolWrapper]: ScalarType.BOOL,
+    [NameDataKeys.DoubleWrapper]: ScalarType.DOUBLE,
+    [NameDataKeys.FloatWrapper]: ScalarType.FLOAT,
+    [NameDataKeys.Fixed64Wrapper]: ScalarType.FIXED64,
+    [NameDataKeys.Fixed32Wrapper]: ScalarType.FIXED32,
+    [NameDataKeys.SFixed32Wrapper]: ScalarType.SFIXED32,
+    [NameDataKeys.SFixed64Wrapper]: ScalarType.SFIXED64,
+    [NameDataKeys.SInt32Wrapper]: ScalarType.SINT32,
+    [NameDataKeys.SInt64Wrapper]: ScalarType.SINT64,
+    [NameDataKeys.UnknownWrapper]: ScalarType.BYTES,
 };
 
 export function autoTypeToClass(typeName: string) {
@@ -177,12 +181,11 @@ export function PBSInt64(field: number = 0, opt: boolean = false) {
     return new SInt64Wrapper(field, BigInt(0), opt) as unknown as bigint;
 }
 
-
-export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
+export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>): PartialFieldInfo {
     const typeName = dataValue.getTypeName();
     const no = dataValue.getFieldId();
     const opt = dataValue._opt;
-    if (typeName === NameData.ArrayWrapper) {
+    if (typeName === NameDataKeys.ArrayWrapper) {
         const item = dataValue._callback();
         if (item instanceof ProtoBufBase) {
             return {
@@ -192,7 +195,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
                 T: () => new MessageType(key, item.generateFields()),
                 opt: opt || false,
                 repeat: RepeatType.PACKED,
-            };
+            } as PartialFieldInfo;
         }
         if (item instanceof ValueWrapper) {
             const itemType = item.getTypeName();
@@ -202,8 +205,8 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
                 kind: 'scalar',
                 T: autoTypeToScalar(itemType),
                 opt: opt || false,
-                repeat: itemType === NameData.StringWrapper || itemType === NameData.BoolWrapper ? RepeatType.UNPACKED : RepeatType.PACKED,
-            };
+                repeat: itemType === NameDataKeys.StringWrapper || itemType === NameDataKeys.BytesWrapper ? RepeatType.UNPACKED : RepeatType.PACKED,
+            } as PartialFieldInfo;
         }
         throw new Error("ArrayWrapper item type error");
     }
@@ -214,7 +217,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
         T: autoTypeToScalar(typeName),
         opt: opt || false,
         repeat: RepeatType.NO,
-    };
+    } as PartialFieldInfo;
 }
 
 // Protobuf标记类
@@ -222,11 +225,11 @@ export class ProtoBufBase {
     public _fieldId: number = 0;
 
     //默认标记类
-    public generateFields(): any {
-        const fields: Array<any> = [];
+    public generateFields(): PartialFieldInfo[] {
+        const fields: PartialFieldInfo[] = [];
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
-            const value = (this as any)[key];
+            const value = this[key as keyof this];
             if (value instanceof ValueWrapper) {
                 fields.push(value.getField(innerKey));
             }
@@ -244,7 +247,7 @@ export class ProtoBufBase {
         return fields;
     }
 
-    public assignFields(fields: any) {
+    public assignFields(fields: { [key: string]: any }) {
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
             let value = (this as any)[key];
@@ -253,21 +256,25 @@ export class ProtoBufBase {
                 if (fieldValue !== undefined) {
                     value.value = fieldValue;
                 }
-            }
-            if (value instanceof ProtoBufBase) {
+            } else if (value instanceof ProtoBufBase) {
                 const fieldValue = fields[innerKey];
                 if (fieldValue !== undefined) {
                     value.assignFields(fieldValue);
+                }
+            } else {
+                const fieldValue = fields[innerKey];
+                if (fieldValue !== undefined) {
+                    this[key as keyof this] = fieldValue;
                 }
             }
         }
     }
 
-    public toObject(): any {
-        const obj: any = {};
+    public toObject(): { [key: string]: any } {
+        const obj: { [key: string]: any } = {};
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
-            const value = (this as any)[key];
+            const value = this[key as keyof this];
             if (value) {
                 if (value instanceof ValueWrapper) {
                     obj[innerKey] = value.value;
@@ -301,7 +308,7 @@ export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T) {
                 target[prop as keyof T] = new WrapperClass(targetValue._fieldId, value, targetValue._opt);
                 return true;
             }
-            target [prop as keyof T] = value;
+            target[prop as keyof T] = value;
             return true;
         },
         get(target, prop) {
