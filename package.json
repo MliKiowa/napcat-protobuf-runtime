@@ -5,7 +5,8 @@
   "scripts": {
     "build:dev": "vite build --mode development",
     "build:prod": "vite build --mode production",
-    "test": "node --experimental-strip-types ./src/test.ts"
+    "test": "node --experimental-strip-types ./src/test.ts",
+    "test-vite": "vite build --mode development & node ./test.js"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.3",

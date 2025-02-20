@@ -61,45 +61,62 @@ export type ExtractType<T> =
 export type ExtractSchema<T> = Omit<{
     [K in keyof T]: T[K] extends ProtoBufBase ? ExtractSchema<T[K]> : ExtractType<T[K]>;
 }, keyof ProtoBufBase>;
-
+const NameData = {
+    "UInt32Wrapper": new UInt32Wrapper(0, 0, false).getTypeName(),
+    "Int32Wrapper": new Int32Wrapper(0, 0, false).getTypeName(),
+    "Int64Wrapper": new Int64Wrapper(0, BigInt(0), false).getTypeName(),
+    "UInt64Wrapper": new UInt64Wrapper(0, BigInt(0), false).getTypeName(),
+    "StringWrapper": new StringWrapper(0, "", false).getTypeName(),
+    "ArrayWrapper": new ArrayWrapper(0, [], false).getTypeName(),
+    "BoolWrapper": new BoolWrapper(0, false, false).getTypeName(),
+    "BytesWrapper": new BytesWrapper(0, new Uint8Array(), false).getTypeName(),
+    "DoubleWrapper": new DoubleWrapper(0, 0, false).getTypeName(),
+    "FloatWrapper": new FloatWrapper(0, 0, false).getTypeName(),
+    "Fixed64Wrapper": new Fixed64Wrapper(0, BigInt(0), false).getTypeName(),
+    "Fixed32Wrapper": new Fixed32Wrapper(0, 0, false).getTypeName(),
+    "SFixed32Wrapper": new SFixed32Wrapper(0, 0, false).getTypeName(),
+    "SFixed64Wrapper": new SFixed64Wrapper(0, BigInt(0), false).getTypeName(),
+    "SInt32Wrapper": new SInt32Wrapper(0, 0, false).getTypeName(),
+    "SInt64Wrapper": new SInt64Wrapper(0, BigInt(0), false).getTypeName(),
+    "UnknownWrapper": new UnknownWrapper(0, undefined, false).getTypeName(),
+}
 // 类型映射工具
 const typeMap: { [key: string]: any } = {
-    "UInt32Wrapper": UInt32Wrapper,
-    "Int32Wrapper": Int32Wrapper,
-    "Int64Wrapper": Int64Wrapper,
-    "UInt64Wrapper": UInt64Wrapper,
-    "StringWrapper": StringWrapper,
-    "ArrayWrapper": ArrayWrapper,
-    "BoolWrapper": BoolWrapper,
-    "BytesWrapper": BytesWrapper,
-    "DoubleWrapper": DoubleWrapper,
-    "FloatWrapper": FloatWrapper,
-    "Fixed64Wrapper": Fixed64Wrapper,
-    "Fixed32Wrapper": Fixed32Wrapper,
-    "SFixed32Wrapper": SFixed32Wrapper,
-    "SFixed64Wrapper": SFixed64Wrapper,
-    "SInt32Wrapper": SInt32Wrapper,
-    "SInt64Wrapper": SInt64Wrapper,
-    "UnknownWrapper": UnknownWrapper,
+    [NameData.UInt32Wrapper]: UInt32Wrapper,
+    [NameData.Int32Wrapper]: Int32Wrapper,
+    [NameData.Int64Wrapper]: Int64Wrapper,
+    [NameData.UInt64Wrapper]: UInt64Wrapper,
+    [NameData.StringWrapper]: StringWrapper,
+    [NameData.ArrayWrapper]: ArrayWrapper,
+    [NameData.BoolWrapper]: BoolWrapper,
+    [NameData.BytesWrapper]: BytesWrapper,
+    [NameData.DoubleWrapper]: DoubleWrapper,
+    [NameData.FloatWrapper]: FloatWrapper,
+    [NameData.Fixed64Wrapper]: Fixed64Wrapper,
+    [NameData.Fixed32Wrapper]: Fixed32Wrapper,
+    [NameData.SFixed32Wrapper]: SFixed32Wrapper,
+    [NameData.SFixed64Wrapper]: SFixed64Wrapper,
+    [NameData.SInt32Wrapper]: SInt32Wrapper,
+    [NameData.SInt64Wrapper]: SInt64Wrapper,
+    [NameData.UnknownWrapper]: UnknownWrapper,
 };
-
 const scalarMap: { [key: string]: ScalarType } = {
-    "UInt32Wrapper": ScalarType.UINT32,
-    "Int32Wrapper": ScalarType.INT32,
-    "Int64Wrapper": ScalarType.INT64,
-    "UInt64Wrapper": ScalarType.UINT64,
-    "StringWrapper": ScalarType.STRING,
-    "BytesWrapper": ScalarType.BYTES,
-    "BoolWrapper": ScalarType.BOOL,
-    "DoubleWrapper": ScalarType.DOUBLE,
-    "FloatWrapper": ScalarType.FLOAT,
-    "Fixed64Wrapper": ScalarType.FIXED64,
-    "Fixed32Wrapper": ScalarType.FIXED32,
-    "SFixed32Wrapper": ScalarType.SFIXED32,
-    "SFixed64Wrapper": ScalarType.SFIXED64,
-    "SInt32Wrapper": ScalarType.SINT32,
-    "SInt64Wrapper": ScalarType.SINT64,
-    "UnknownWrapper": ScalarType.BYTES,
+    [NameData.UInt32Wrapper]: ScalarType.UINT32,
+    [NameData.Int32Wrapper]: ScalarType.INT32,
+    [NameData.Int64Wrapper]: ScalarType.INT64,
+    [NameData.UInt64Wrapper]: ScalarType.UINT64,
+    [NameData.StringWrapper]: ScalarType.STRING,
+    [NameData.BytesWrapper]: ScalarType.BYTES,
+    [NameData.BoolWrapper]: ScalarType.BOOL,
+    [NameData.DoubleWrapper]: ScalarType.DOUBLE,
+    [NameData.FloatWrapper]: ScalarType.FLOAT,
+    [NameData.Fixed64Wrapper]: ScalarType.FIXED64,
+    [NameData.Fixed32Wrapper]: ScalarType.FIXED32,
+    [NameData.SFixed32Wrapper]: ScalarType.SFIXED32,
+    [NameData.SFixed64Wrapper]: ScalarType.SFIXED64,
+    [NameData.SInt32Wrapper]: ScalarType.SINT32,
+    [NameData.SInt64Wrapper]: ScalarType.SINT64,
+    [NameData.UnknownWrapper]: ScalarType.BYTES,
 };
 
 export function autoTypeToClass(typeName: string) {
@@ -165,7 +182,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
     const typeName = dataValue.getTypeName();
     const no = dataValue.getFieldId();
     const opt = dataValue._opt;
-    if (typeName === "ArrayWrapper") {
+    if (typeName === NameData.ArrayWrapper) {
         const item = dataValue._callback();
         if (item instanceof ProtoBufBase) {
             return {
@@ -185,7 +202,7 @@ export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>) {
                 kind: 'scalar',
                 T: autoTypeToScalar(itemType),
                 opt: opt || false,
-                repeat: itemType === "StringWrapper" || itemType === "BytesWrapper" ? RepeatType.UNPACKED : RepeatType.PACKED,
+                repeat: itemType === NameData.StringWrapper || itemType === NameData.BoolWrapper ? RepeatType.UNPACKED : RepeatType.PACKED,
             };
         }
         throw new Error("ArrayWrapper item type error");
