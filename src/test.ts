@@ -16,7 +16,6 @@ class ProtoBufDataClass extends ProtoBufBase {
 
 export function testPb() {
     const test = ProtoBufEx(ProtoBufDataClass, {
-        uin: 100,
         inner: {
             data: "x",
             test: 300
@@ -33,7 +32,8 @@ export function testPb() {
         }],
         listquick: [{
             data: "xxxxx"
-        }]
+        }],
+        uin: 0
     });
     test.uin = 200;
     console.log(Buffer.from(test.encode()).toString('hex'));
@@ -43,8 +43,7 @@ export function testPb() {
     console.log(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode());
 
 
-    console.log(
-        Buffer.from(ProtoBufQuick({ uin: ProtoBufIn(1, { data: PBString(5) }) }, { uin: { data: "123" } }).encode()).toString('hex'));
+    console.log(Buffer.from(ProtoBufQuick({ uin: ProtoBufIn(1, { data: PBString(5) }) }, { uin: { data: "123" } }).encode()).toString('hex'));
 }
 
 testPb();

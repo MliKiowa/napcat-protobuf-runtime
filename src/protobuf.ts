@@ -335,7 +335,7 @@ export function ProtoBuf<T extends ProtoBufBase>(data: number | (new () => T), v
     dataClass._fieldId = typeof data === "number" ? data : 0;
     return dataClass;
 }
-export function ProtoBufEx<T extends ProtoBufBase>(valueClass: new () => T, value: ExtractSchema<T>): T {
+export function ProtoBufEx<T extends ProtoBufBase, U extends ExtractSchema<T>>(valueClass: new () => T, value: U): T {
     const dataClass = proxyClassProtobuf(new valueClass());
     dataClass.assignFields(value);
     return dataClass;
