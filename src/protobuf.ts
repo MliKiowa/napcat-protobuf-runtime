@@ -248,6 +248,29 @@ export class ProtoBufBase {
         return fields;
     }
 
+    public assignFields(fields: { [key: string]: unknown }) {
+        for (const innerKey of Object.keys(this)) {
+            const key = '_' + innerKey;
+            let value = this[key as keyof this];
+            if (value instanceof ValueWrapper) {
+                const fieldValue = fields[innerKey];
+                if (fieldValue !== undefined) {
+                    value.value = fieldValue;
+                }
+            } else if (value instanceof ProtoBufBase) {
+                const fieldValue = fields[innerKey];
+                if (fieldValue !== undefined) {
+                    value.assignFields(fieldValue as { [key: string]: unknown });
+                }
+            } else {
+                const fieldValue = fields[innerKey];
+                if (fieldValue !== undefined) {
+                    this[key as keyof this] = fieldValue as typeof value;
+                }
+            }
+        }
+    }
+
     public toObject(): { [key: string]: unknown } {
         const obj: { [key: string]: unknown } = {};
         for (const innerKey of Object.keys(this)) {
@@ -314,14 +337,14 @@ export function ProtoBuf<T extends ProtoBufBase>(data: number | (new () => T), v
 }
 export function ProtoBufEx<T extends ProtoBufBase>(valueClass: new () => T, value: ExtractSchema<T>): T {
     const dataClass = proxyClassProtobuf(new valueClass());
-    Object.assign(dataClass, value);
+    dataClass.assignFields(value);
     return dataClass;
 }
 export function ProtoBufQuick<T extends {}>(pb: T, data: T): ProtoBufBase {
     let protobuf = class extends ProtoBufBase { };
     const instance = ProtoBuf(protobuf);
     Object.assign(instance, pb);
-    Object.assign(instance, data);
+    instance.assignFields(data);
     return instance;
 }
 export function ProtoBufIn<T>(data: T): T & ProtoBufBase {
