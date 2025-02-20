@@ -131,7 +131,6 @@ export function autoTypeToClass(typeName: string) {
 function autoTypeToScalar(typeName: string) {
     return scalarMap[typeName] || ScalarType.BYTES;
 }
-
 // 默认值创建构造类
 export function PBArray<T>(field: number = 0, data: T, opt: boolean = false, value: T[] = []) {
     return new ArrayWrapper<T>(field, value, opt, () => data) as unknown as Omit<T, keyof ProtoBufBase>[];
@@ -297,6 +296,9 @@ export class ProtoBufBase {
         Object.assign(this, pbData);
         return this;
     }
+    public then(callback: (data: this) => void) {
+        callback(this);
+    }
 }
 
 export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T): T {
@@ -304,8 +306,10 @@ export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T): T {
         set(target, prop, value) {
             const targetValue = target[prop as keyof T];
             if (targetValue instanceof ValueWrapper) {
-                const WrapperClass = autoTypeToClass(targetValue.getTypeName());
-                target[prop as keyof T] = new WrapperClass(targetValue._fieldId, value, targetValue._opt) as typeof targetValue;
+                // 是否引用决定
+                // const WrapperClass = autoTypeToClass(targetValue.getTypeName());
+                // target[prop as keyof T] = new WrapperClass(targetValue._fieldId, value, targetValue._opt) as typeof targetValue;
+                (target[prop as keyof T] as ValueWrapper<T>).value = value;
                 return true;
             }
             target[prop as keyof T] = value;
@@ -356,4 +360,10 @@ export function ProtoBufIn<T>(data: number | T, value?: T): T {
         return proxyClassProtobuf(dataclass) as T;
     }
     return proxyClassProtobuf(new class extends ProtoBufBase { constructor() { super(); Object.assign(this, data); } } as ProtoBufBase) as T;
+}
+export function Reference<T>(data: T) {
+    return data as ValueWrapper<T>;
+}
+export function UnReference<T>(data: ValueWrapper<T>) {
+    return data.value;
 }
