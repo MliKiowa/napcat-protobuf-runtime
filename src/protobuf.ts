@@ -35,23 +35,23 @@ export class ValueWrapper<T> {
     }
 }
 
-export class DoubleWrapper extends ValueWrapper<number> { getTypeName(): string { return "DoubleWrapper"; } }
-export class FloatWrapper extends ValueWrapper<number> { getTypeName(): string { return "FloatWrapper"; } }
-export class StringWrapper extends ValueWrapper<string> { getTypeName(): string { return "StringWrapper"; } }
-export class UInt32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "UInt32Wrapper"; } }
-export class Int32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "Int32Wrapper"; } }
-export class Int64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "Int64Wrapper"; } }
-export class UInt64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "UInt64Wrapper"; } }
-export class ArrayWrapper<T> extends ValueWrapper<T[]> { getTypeName(): string { return "ArrayWrapper"; } }
-export class BoolWrapper extends ValueWrapper<boolean> { getTypeName(): string { return "BoolWrapper"; } }
-export class BytesWrapper extends ValueWrapper<Uint8Array> { getTypeName(): string { return "BytesWrapper"; } }
-export class Fixed64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "Fixed64Wrapper"; } }
-export class Fixed32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "Fixed32Wrapper"; } }
-export class SFixed32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "SFixed32Wrapper"; } }
-export class SFixed64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "SFixed64Wrapper"; } }
-export class SInt32Wrapper extends ValueWrapper<number> { getTypeName(): string { return "SInt32Wrapper"; } }
-export class SInt64Wrapper extends ValueWrapper<bigint> { getTypeName(): string { return "SInt64Wrapper"; } }
-export class UnknownWrapper extends ValueWrapper<unknown> { getTypeName(): string { return "UnknownWrapper"; } }
+export class DoubleWrapper extends ValueWrapper<number> { getTypeName() { return "DoubleWrapper"; } }
+export class FloatWrapper extends ValueWrapper<number> { getTypeName() { return "FloatWrapper"; } }
+export class StringWrapper extends ValueWrapper<string> { getTypeName() { return "StringWrapper"; } }
+export class UInt32Wrapper extends ValueWrapper<number> { getTypeName() { return "UInt32Wrapper"; } }
+export class Int32Wrapper extends ValueWrapper<number> { getTypeName() { return "Int32Wrapper"; } }
+export class Int64Wrapper extends ValueWrapper<bigint> { getTypeName() { return "Int64Wrapper"; } }
+export class UInt64Wrapper extends ValueWrapper<bigint> { getTypeName() { return "UInt64Wrapper"; } }
+export class ArrayWrapper<T> extends ValueWrapper<T[]> { getTypeName() { return "ArrayWrapper"; } }
+export class BoolWrapper extends ValueWrapper<boolean> { getTypeName() { return "BoolWrapper"; } }
+export class BytesWrapper extends ValueWrapper<Uint8Array> { getTypeName() { return "BytesWrapper"; } }
+export class Fixed64Wrapper extends ValueWrapper<bigint> { getTypeName() { return "Fixed64Wrapper"; } }
+export class Fixed32Wrapper extends ValueWrapper<number> { getTypeName() { return "Fixed32Wrapper"; } }
+export class SFixed32Wrapper extends ValueWrapper<number> { getTypeName() { return "SFixed32Wrapper"; } }
+export class SFixed64Wrapper extends ValueWrapper<bigint> { getTypeName() { return "SFixed64Wrapper"; } }
+export class SInt32Wrapper extends ValueWrapper<number> { getTypeName() { return "SInt32Wrapper"; } }
+export class SInt64Wrapper extends ValueWrapper<bigint> { getTypeName() { return "SInt64Wrapper"; } }
+export class UnknownWrapper extends ValueWrapper<unknown> { getTypeName() { return "UnknownWrapper"; } }
 
 // 类型提取工具
 export type ExtractType<T> =
