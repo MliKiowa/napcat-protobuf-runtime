@@ -11,7 +11,7 @@ export default defineConfig({
     build: {
         sourcemap: true,
         lib: {
-            entry: './src/test.ts',
+            entry: './src/protobuf.ts',
             name: 'protobuf',
             formats: ['es', 'cjs'],
             fileName: 'protobuf',
