@@ -1,5 +1,6 @@
 import { MessageType, RepeatType, ScalarType } from '@protobuf-ts/runtime';
 import type { PartialFieldInfo } from '@protobuf-ts/runtime';
+
 // 值包装类
 export class ValueWrapper<T> {
     public _value: T;
@@ -250,7 +251,7 @@ export class ProtoBufBase {
     public assignFields(fields: { [key: string]: any }) {
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
-            let value = (this as any)[key];
+            let value = this[key as keyof this];
             if (value instanceof ValueWrapper) {
                 const fieldValue = fields[innerKey];
                 if (fieldValue !== undefined) {
@@ -288,8 +289,7 @@ export class ProtoBufBase {
     }
 
     public encode(): Uint8Array {
-        const pbData = new MessageType("message", this.generateFields()).toBinary(this.toObject());
-        return pbData;
+        return new MessageType("message", this.generateFields()).toBinary(this.toObject());
     }
 
     public decode(data: Uint8Array): ProtoBufBase {
