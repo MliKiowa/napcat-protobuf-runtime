@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "build:dev": "vite build --mode development",
-    "build:prod": "vite build --mode production"
+    "build:prod": "vite build --mode production",
+    "run": "vite build --mode development && node dist/protobuf.js"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.3",
