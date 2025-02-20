@@ -28,6 +28,7 @@ export default defineConfig({
                 { src: './src/package.json', dest: 'dist' },
                 { src: './src/protobuf.ts', dest: 'dist/src' },
                 { src: './src/test.ts', dest: 'dist/src' },
+                { src: './README.md', dest: 'dist' },
             ]
         })],
 });
