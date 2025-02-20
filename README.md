@@ -9,13 +9,12 @@ pb-ts runtime/pb-js runtime 各种库类型提取困难 基于runtime编写困�
 ## 目标与特色
 提供快速Develop和优雅的方案进行操作与读取
 
+- [x] DataClass 风格定义ProtoBuf结构 规范性写法
 - [x] 除开DataClass式结构声明结构 同样能使用Object完成声明PB结构
 - [x] 进行反序列化/序列化的数据绑定 将值同步到外部绑定 无需进行二次结构化数据Object进行encode/decode
-- [x] DataClass 风格定义ProtoBuf结构 规范性写法
-- [x] 支持通过模板快速创建匿名DataClass 并立即填入数据序列化/反序列号
-- [x] Array替代Repeat 与语言Array结合
+- [x] 支持通过模板快速创建匿名DataClass 并立即填入数据序列化/反序列化
+- [x] Array替代Repeat声明 与语言Array结合
 - [x] 在没有ProtoBuf结构的情况下盲解ProtoBuf数据
-- [x] DataClass映射PB字段数据
 - [x] 支持在一行以内 完成声明->填入数据->encode
 - [x] 提供PB结构序列化JSON/JS对象
 - [x] 规避类型type-orm库存在的属性默认值问题
