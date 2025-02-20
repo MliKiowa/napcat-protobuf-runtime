@@ -85,7 +85,7 @@ const NameDataKeys = {
 }
 
 // 类型映射工具
-const typeMap: { [key: string]: any } = {
+const typeMap = {
     [NameDataKeys.UInt32Wrapper]: UInt32Wrapper,
     [NameDataKeys.Int32Wrapper]: Int32Wrapper,
     [NameDataKeys.Int64Wrapper]: Int64Wrapper,
@@ -248,7 +248,7 @@ export class ProtoBufBase {
         return fields;
     }
 
-    public assignFields(fields: { [key: string]: any }) {
+    public assignFields(fields: { [key: string]: unknown }) {
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
             let value = this[key as keyof this];
@@ -260,19 +260,19 @@ export class ProtoBufBase {
             } else if (value instanceof ProtoBufBase) {
                 const fieldValue = fields[innerKey];
                 if (fieldValue !== undefined) {
-                    value.assignFields(fieldValue);
+                    value.assignFields(fieldValue as { [key: string]: unknown });
                 }
             } else {
                 const fieldValue = fields[innerKey];
                 if (fieldValue !== undefined) {
-                    this[key as keyof this] = fieldValue;
+                    this[key as keyof this] = fieldValue as typeof value;
                 }
             }
         }
     }
 
-    public toObject(): { [key: string]: any } {
-        const obj: { [key: string]: any } = {};
+    public toObject(): { [key: string]: unknown } {
+        const obj: { [key: string]: unknown } = {};
         for (const innerKey of Object.keys(this)) {
             const key = '_' + innerKey;
             const value = this[key as keyof this];
@@ -299,13 +299,13 @@ export class ProtoBufBase {
     }
 }
 
-export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T) {
+export function proxyClassProtobuf<T extends ProtoBufBase>(protobuf: T): T {
     return new Proxy(protobuf, {
         set(target, prop, value) {
             const targetValue = target[prop as keyof T];
             if (targetValue instanceof ValueWrapper) {
                 const WrapperClass = autoTypeToClass(targetValue.getTypeName());
-                target[prop as keyof T] = new WrapperClass(targetValue._fieldId, value, targetValue._opt);
+                target[prop as keyof T] = new WrapperClass(targetValue._fieldId, value, targetValue._opt) as typeof targetValue;
                 return true;
             }
             target[prop as keyof T] = value;
@@ -340,13 +340,13 @@ export function ProtoBufEx<T extends ProtoBufBase>(valueClass: new () => T, valu
     dataClass.assignFields(value);
     return dataClass;
 }
-export function ProtoBufQuick<T>(pb: T, data: T) {
+export function ProtoBufQuick<T extends {}>(pb: T, data: T): ProtoBufBase {
     let protobuf = class extends ProtoBufBase { };
     const instance = ProtoBuf(protobuf);
     Object.assign(instance, pb);
     instance.assignFields(data);
     return instance;
 }
-export function ProtoBufIn<T>(data: T) {
+export function ProtoBufIn<T>(data: T): T & ProtoBufBase {
     return proxyClassProtobuf(new class extends ProtoBufBase { constructor() { super(); Object.assign(this, data); } } as T & ProtoBufBase);
 }
