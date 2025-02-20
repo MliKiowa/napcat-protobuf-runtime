@@ -1,4 +1,4 @@
-import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufEx, ProtoBufIn, ProtoBufQuick } from "./protobuf";
+import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufEx, ProtoBufIn, ProtoBufQuick } from "./protobuf.ts";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
