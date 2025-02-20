@@ -41,6 +41,10 @@ export function testPb() {
     test.decode(new Uint8Array(data));
     console.log(JSON.stringify(test.toObject()));
     console.log(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode());
+
+
+    console.log(
+        Buffer.from(ProtoBufQuick({ uin: ProtoBufIn(1, { data: PBString(5) }) }, { uin: { data: "123" } }).encode()).toString('hex'));
 }
 
 testPb();

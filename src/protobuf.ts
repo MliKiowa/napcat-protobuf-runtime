@@ -340,13 +340,20 @@ export function ProtoBufEx<T extends ProtoBufBase>(valueClass: new () => T, valu
     dataClass.assignFields(value);
     return dataClass;
 }
-export function ProtoBufQuick<T extends {}>(pb: T, data: T): ProtoBufBase {
+export function ProtoBufQuick<T extends {}, U extends T>(pb: T, data: U): ProtoBufBase {
     let protobuf = class extends ProtoBufBase { };
     const instance = ProtoBuf(protobuf);
     Object.assign(instance, pb);
     instance.assignFields(data);
     return instance;
 }
-export function ProtoBufIn<T>(data: T): T & ProtoBufBase {
-    return proxyClassProtobuf(new class extends ProtoBufBase { constructor() { super(); Object.assign(this, data); } } as T & ProtoBufBase);
+export function ProtoBufIn<T>(field: number, data: T): T;
+export function ProtoBufIn<T>(data: T): T;
+export function ProtoBufIn<T>(data: number | T, value?: T): T {
+    if (typeof data === "number") {
+        let dataclass = new class extends ProtoBufBase { constructor() { super(); Object.assign(this, value); } } as ProtoBufBase;
+        dataclass._fieldId = data;
+        return proxyClassProtobuf(dataclass) as T;
+    }
+    return proxyClassProtobuf(new class extends ProtoBufBase { constructor() { super(); Object.assign(this, data); } } as ProtoBufBase) as T;
 }
