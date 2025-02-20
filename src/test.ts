@@ -48,8 +48,6 @@ export function testPb() {
     console.log("序列化JSON演示:", JSON.stringify(test.toObject()));
     console.log("快速序列化演示:", Buffer.from(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode()).toString('hex'));
     console.log("复杂快速序列化演示:", Buffer.from(ProtoBufQuick({ uin: ProtoBufIn(1, { data: PBString(5) }) }, { uin: { data: "123" } }).encode()).toString('hex'));
-    let uin = Reference(PBUint32());
-    let name = Reference(PBString());
     console.log("函数辅助序列化演示:", Buffer.from(CreatPB(100, "test")).toString('hex'));
     let data_uin = Reference(PBUint32(1, false, 0));
     let data_name = Reference(PBString(2, false, ""));
