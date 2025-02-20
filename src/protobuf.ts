@@ -1,4 +1,4 @@
-import { MessageType, RepeatType, ScalarType } from '@protobuf-ts/runtime';
+import { BinaryReader, MessageType, RepeatType, ScalarType, WireType } from '@protobuf-ts/runtime';
 import type { PartialFieldInfo } from '@protobuf-ts/runtime';
 
 // 值包装类
@@ -366,4 +366,57 @@ export function Reference<T>(data: T) {
 }
 export function UnReference<T>(data: ValueWrapper<T>) {
     return data.value;
+}
+export function decodeProtoBuf(typeName: string, message: any, fieldNo: number, wireType: WireType, data: Uint8Array) {
+    let value;
+    const reader = new BinaryReader(data);
+    switch (wireType) {
+        case WireType.Varint:
+            value = reader.uint64();
+            value = value.hi > 0 ? value.toBigInt() : Number(value.lo);
+            break;
+        case WireType.Bit64:
+            value = reader.fixed64();
+            break;
+        case WireType.LengthDelimited:
+            let data = reader.bytes();
+            try {
+                value = ProtoBufDecode(data);
+            } catch (error) {
+                try {
+                    value = new TextDecoder().decode(data);
+                    if (value.indexOf('�') !== -1) {
+                        throw new Error('Invalid UTF-8 sequence in input');
+                    }
+                } catch (error) {
+                    value = data;
+                }
+            }
+            break;
+        case WireType.StartGroup:
+        case WireType.EndGroup:
+            // Groups are deprecated and not supported
+            break;
+        case WireType.Bit32:
+            value = reader.fixed32();
+            break;
+        default:
+            throw new Error(`Unknown wire type: ${wireType}`);
+    }
+    if (message[fieldNo]) {
+        if (message[fieldNo] instanceof Array) {
+            message[fieldNo].push(value);
+        } else {
+            message[fieldNo] = [message[fieldNo], value];
+        }
+    } else {
+        message[fieldNo] = value;
+    }
+}
+export function ProtoBufDecode(data: Uint8Array) {
+    const messageType = new MessageType("message", []);
+    const decodedMessage = messageType.fromBinary(data, {
+        readUnknownField: decodeProtoBuf
+    });
+    return decodedMessage;
 }

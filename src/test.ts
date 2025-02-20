@@ -1,4 +1,4 @@
-import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufEx, ProtoBufIn, ProtoBufQuick, Reference, StringWrapper, UInt32Wrapper, UnReference, ValueWrapper } from "./protobuf.ts";
+import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, Reference, StringWrapper, UInt32Wrapper, UnReference, ValueWrapper } from "./protobuf.ts";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
@@ -43,6 +43,8 @@ export function testSerialization() {
         uin: 0
     });
     console.log("值首次序列化:", Buffer.from(test.encode()).toString('hex'));
+    console.log("值修改前序列化:", test.listinner[0].data);
+    test.listinner[0].data = ["x00", "xxxxx"];
     test.inner.test = 200;
     console.log("值修改序列化:", Buffer.from(test.encode()).toString('hex'));
 }
@@ -100,10 +102,14 @@ export function testFunctionDeserialization() {
     }).decode(createProtobuf(7000, "test"));
     console.log("函数辅助反序列化演示:", UnReference(data_uin), UnReference(data_name));
 }
-
+export function normalDecode() {
+    let data = new Uint8Array(Buffer.from('12060a017810c8011a060a02787810051a070a037878781002220c0a037830300a0578787878782a070a057878787878', 'hex'))
+    console.log("无protobuf盲解:", JSON.stringify(ProtoBufDecode(data), null, 2));
+}
 testSerialization();
 testDeserialization();
 testJsonSerialization();
 testQuickSerialization();
 testFunctionSerialization();
 testFunctionDeserialization();
+normalDecode();
