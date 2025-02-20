@@ -1,24 +1,23 @@
 {
   "name": "napcat.protobuf",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "exports": {
     ".": {
       "import": {
-        "types": "./protobuf.es.d.ts",
         "default": "./protobuf.js"
       },
       "require": {
-        "types": "./protobuf.cjs.d.ts",
         "default": "./protobuf.cjs"
       }
-    }
+    },
+    "./*": "./*"
   },
   "files": [
     "./**/*"
   ],
-  "scripts": {
-    "build:dev": "vite build --mode development",
-    "build:prod": "vite build --mode production"
+  "types": "./protobuf.d.ts",
+  "dependencies": {
+    "@protobuf-ts/runtime": "^2.9.4"
   }
 }
