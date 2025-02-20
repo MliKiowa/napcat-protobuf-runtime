@@ -9,3 +9,44 @@ pb-ts runtime/pb-js runtime 各种库类型提取困难 基于runtime编写困�
 
 ## 缺点
 proxy + 套嵌 存在性能损失 但是我写的舒服就行了.jpg
+
+## 示例
+```typescript
+import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufEx, ProtoBufIn, ProtoBufQuick, Reference, StringWrapper, UInt32Wrapper, UnReference, ValueWrapper } from "./protobuf.ts";
+
+class ProtoBufDataInnerClass extends ProtoBufBase {
+    data = PBString(1);
+    test = PBUint32(2);
+}
+
+class ProtoBufDataClass extends ProtoBufBase {
+    uin = PBUint32(1);
+    inner = ProtoBuf(2, ProtoBufDataInnerClass);
+    list = PBArray(3, ProtoBuf(ProtoBufDataInnerClass));
+    listinner = PBArray(4, ProtoBuf(class extends ProtoBufBase { data = PBArray(1, PBString()); }));
+    listquick = PBArray(5, ProtoBufIn({ data: PBString(1) }));
+}
+const test = ProtoBufEx(ProtoBufDataClass, {
+    inner: {
+        data: "x",
+        test: 300
+    },
+    list: [{
+        data: "xx",
+        test: 5
+    }, {
+        data: "xxx",
+        test: 2
+    }],
+    listinner: [{
+        data: ["x", "xxxx"]
+    }],
+    listquick: [{
+        data: "xxxxx"
+    }],
+    uin: 0
+});
+console.log("值首次序列化:", Buffer.from(test.encode()).toString('hex'));
+test.inner.test = 200;
+console.log("值修改序列化:", Buffer.from(test.encode()).toString('hex'));
+```
