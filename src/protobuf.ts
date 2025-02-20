@@ -133,53 +133,53 @@ function autoTypeToScalar(typeName: string) {
 }
 
 // 默认值创建构造类
-export function PBArray<T>(field: number = 0, data: T, opt: boolean = false) {
-    return new ArrayWrapper<T>(field, [], opt, () => data) as unknown as Omit<T, keyof ProtoBufBase>[];
+export function PBArray<T>(field: number = 0, data: T, opt: boolean = false, value: T[] = []) {
+    return new ArrayWrapper<T>(field, value, opt, () => data) as unknown as Omit<T, keyof ProtoBufBase>[];
 }
-export function PBDouble(field: number = 0, opt: boolean = false) {
-    return new DoubleWrapper(field, 0, opt) as unknown as number;
+export function PBDouble(field: number = 0, opt: boolean = false, value = 0) {
+    return new DoubleWrapper(field, value, opt) as unknown as number;
 }
-export function PBFloat(field: number = 0, opt: boolean = false) {
-    return new FloatWrapper(field, 0, opt) as unknown as number;
+export function PBFloat(field: number = 0, opt: boolean = false, value = 0) {
+    return new FloatWrapper(field, value, opt) as unknown as number;
 }
-export function PBString(field: number = 0, opt: boolean = false) {
-    return new StringWrapper(field, "", opt) as unknown as string;
+export function PBString(field: number = 0, opt: boolean = false, value = "") {
+    return new StringWrapper(field, value, opt) as unknown as string;
 }
-export function PBUint32(field: number = 0, opt: boolean = false) {
-    return new UInt32Wrapper(field, 0, opt) as unknown as number;
+export function PBUint32(field: number = 0, opt: boolean = false, value = 0) {
+    return new UInt32Wrapper(field, value, opt) as unknown as number;
 }
-export function PBInt32(field: number = 0, opt: boolean = false) {
-    return new Int32Wrapper(field, 0, opt) as unknown as number;
+export function PBInt32(field: number = 0, opt: boolean = false, value = 0) {
+    return new Int32Wrapper(field, value, opt) as unknown as number;
 }
-export function PBInt64(field: number = 0, opt: boolean = false) {
-    return new Int64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+export function PBInt64(field: number = 0, opt: boolean = false, value = BigInt(0)) {
+    return new Int64Wrapper(field, value, opt) as unknown as bigint;
 }
-export function PBUint64(field: number = 0, opt: boolean = false) {
-    return new UInt64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+export function PBUint64(field: number = 0, opt: boolean = false, value = BigInt(0)) {
+    return new UInt64Wrapper(field, value, opt) as unknown as bigint;
 }
-export function PBBool(field: number = 0, opt: boolean = false) {
-    return new BoolWrapper(field, false, opt) as unknown as boolean;
+export function PBBool(field: number = 0, opt: boolean = false, value = false) {
+    return new BoolWrapper(field, value, opt) as unknown as boolean;
 }
-export function PBBytes(field: number = 0, opt: boolean = false) {
-    return new BytesWrapper(field, new Uint8Array(), opt) as unknown as Uint8Array;
+export function PBBytes(field: number = 0, opt: boolean = false, value = new Uint8Array()) {
+    return new BytesWrapper(field, value, opt) as unknown as Uint8Array;
 }
-export function PBFixed64(field: number = 0, opt: boolean = false) {
-    return new Fixed64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+export function PBFixed64(field: number = 0, opt: boolean = false, value = BigInt(0)) {
+    return new Fixed64Wrapper(field, value, opt) as unknown as bigint;
 }
-export function PBFixed32(field: number = 0, opt: boolean = false) {
-    return new Fixed32Wrapper(field, 0, opt) as unknown as number;
+export function PBFixed32(field: number = 0, opt: boolean = false, value = 0) {
+    return new Fixed32Wrapper(field, value, opt) as unknown as number;
 }
-export function PBSFixed32(field: number = 0, opt: boolean = false) {
-    return new SFixed32Wrapper(field, 0, opt) as unknown as number;
+export function PBSFixed32(field: number = 0, opt: boolean = false, value = 0) {
+    return new SFixed32Wrapper(field, value, opt) as unknown as number;
 }
-export function PBSFixed64(field: number = 0, opt: boolean = false) {
-    return new SFixed64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+export function PBSFixed64(field: number = 0, opt: boolean = false, value = BigInt(0)) {
+    return new SFixed64Wrapper(field, value, opt) as unknown as bigint;
 }
-export function PBSInt32(field: number = 0, opt: boolean = false) {
-    return new SInt32Wrapper(field, 0, opt) as unknown as number;
+export function PBSInt32(field: number = 0, opt: boolean = false, value = 0) {
+    return new SInt32Wrapper(field, value, opt) as unknown as number;
 }
-export function PBSInt64(field: number = 0, opt: boolean = false) {
-    return new SInt64Wrapper(field, BigInt(0), opt) as unknown as bigint;
+export function PBSInt64(field: number = 0, opt: boolean = false, value = BigInt(0)) {
+    return new SInt64Wrapper(field, value, opt) as unknown as bigint;
 }
 
 export function autoTypeToField(key: string, dataValue: ValueWrapper<unknown>): PartialFieldInfo {
