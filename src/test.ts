@@ -1,4 +1,4 @@
-import { PBArray, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, Reference, StringWrapper, UInt32Wrapper, UnReference, ValueWrapper } from "./protobuf.ts";
+import { PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, Reference, StringWrapper, UInt32Wrapper, UnReference, ValueWrapper } from "./protobuf.ts";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
@@ -81,7 +81,8 @@ export function testJsonSerialization() {
 
 export function testQuickSerialization() {
     console.log("快速序列化演示:", Buffer.from(ProtoBufQuick({ uin: PBUint32(1) }, { uin: 120 }).encode()).toString('hex'));
-    console.log("复杂快速序列化演示:", Buffer.from(ProtoBufQuick({ uin: ProtoBufIn(1, { data: PBString(5) }) }, { uin: { data: "123" } }).encode()).toString('hex'));
+    console.log("复杂快速序列化演示:", Buffer.from(ProtoBufQuick({ uin: ProtoBufIn(1, { data: PBBytes(5) }) },
+        { uin: { data: new Uint8Array([0x125, 0x25]) } }).encode()).toString('hex'));
 }
 
 export function testFunctionSerialization() {
@@ -103,7 +104,7 @@ export function testFunctionDeserialization() {
     console.log("函数辅助反序列化演示:", UnReference(data_uin), UnReference(data_name));
 }
 export function normalDecode() {
-    let data = new Uint8Array(Buffer.from('12060a017810c8011a060a02787810051a070a037878781002220c0a037830300a0578787878782a070a057878787878', 'hex'))
+    let data = new Uint8Array(Buffer.from('0a042a022525', 'hex'))
     console.log("无protobuf盲解:", JSON.stringify(ProtoBufDecode(data), null, 2));
 }
 testSerialization();

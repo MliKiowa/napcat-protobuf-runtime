@@ -367,7 +367,7 @@ export function Reference<T>(data: T) {
 export function UnReference<T>(data: ValueWrapper<T>) {
     return data.value;
 }
-export function decodeProtoBuf(typeName: string, message: any, fieldNo: number, wireType: WireType, data: Uint8Array) {
+export function decodeProtoBuf<T>(typeName: string, message: any, fieldNo: number, wireType: WireType, data: Uint8Array, encodeBytes?: (data: Uint8Array) => T) {
     let value;
     const reader = new BinaryReader(data);
     switch (wireType) {
@@ -389,7 +389,11 @@ export function decodeProtoBuf(typeName: string, message: any, fieldNo: number, 
                         throw new Error('Invalid UTF-8 sequence in input');
                     }
                 } catch (error) {
-                    value = data;
+                    if (encodeBytes) {
+                        value = encodeBytes(data);
+                    } else {
+                        value = data;
+                    }
                 }
             }
             break;
@@ -413,10 +417,10 @@ export function decodeProtoBuf(typeName: string, message: any, fieldNo: number, 
         message[fieldNo] = value;
     }
 }
-export function ProtoBufDecode(data: Uint8Array) {
+export function ProtoBufDecode<T>(data: Uint8Array, encodeBytes?: (data: Uint8Array) => T) {
     const messageType = new MessageType("message", []);
     const decodedMessage = messageType.fromBinary(data, {
-        readUnknownField: decodeProtoBuf
+        readUnknownField: (typeName, message, fieldNo, wireType, data) => decodeProtoBuf(typeName, message, fieldNo, wireType, data, encodeBytes),
     });
     return decodedMessage;
 }
