@@ -93,13 +93,13 @@ export function testFunctionDeserialization() {
     let data_uin = Reference(PBUint32(1, false, 0));
     let data_name = Reference(PBString(2, false, ""));
     ProtoBuf(class ProtoBufDataClass extends ProtoBufBase {
-        uin = Reference(data_uin);
-        name = Reference(data_name);
+        uin = data_uin;
+        name = data_name;
     }).decode(createProtobuf(8000, "demo"));
     console.log("函数辅助反序列化演示:", UnReference(data_uin), UnReference(data_name));
     ProtoBuf(class ProtoBufDataClass extends ProtoBufBase {
-        uin = Reference(data_uin);
-        name = Reference(data_name);
+        uin = data_uin;
+        name = data_name;
     }).decode(createProtobuf(7000, "test"));
     console.log("函数辅助反序列化演示:", UnReference(data_uin), UnReference(data_name));
 }
