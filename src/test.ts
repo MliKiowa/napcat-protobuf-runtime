@@ -1,4 +1,4 @@
-import { PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, Reference, StringWrapper, UInt32Wrapper, UnReference, ValueWrapper } from "./protobuf.ts";
+import { PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, UnWrap } from "./protobuf.ts";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
@@ -90,18 +90,18 @@ export function testFunctionSerialization() {
 }
 
 export function testFunctionDeserialization() {
-    let data_uin = Reference(PBUint32(1, false, 0));
-    let data_name = Reference(PBString(2, false, ""));
+    let data_uin = PBUint32(1, false, 0);
+    let data_name = PBString(2, false, "");
     ProtoBuf(class ProtoBufDataClass extends ProtoBufBase {
         uin = data_uin;
         name = data_name;
     }).decode(createProtobuf(8000, "demo"));
-    console.log("函数辅助反序列化演示:", UnReference(data_uin), UnReference(data_name));
+    console.log("函数辅助反序列化演示:", UnWrap(data_uin), UnWrap(data_name));
     ProtoBuf(class ProtoBufDataClass extends ProtoBufBase {
         uin = data_uin;
         name = data_name;
     }).decode(createProtobuf(7000, "test"));
-    console.log("函数辅助反序列化演示:", UnReference(data_uin), UnReference(data_name));
+    console.log("函数辅助反序列化演示:", UnWrap(data_uin), UnWrap(data_name));
 }
 export function normalDecode() {
     let data = new Uint8Array(Buffer.from('0a042a022525', 'hex'))

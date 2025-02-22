@@ -361,11 +361,8 @@ export function ProtoBufIn<T>(data: number | T, value?: T): T {
     }
     return proxyClassProtobuf(new class extends ProtoBufBase { constructor() { super(); Object.assign(this, data); } } as ProtoBufBase) as T;
 }
-export function Reference<T>(data: T) {
-    return data as ValueWrapper<T>;
-}
-export function UnReference<T>(data: ValueWrapper<T>) {
-    return data.value;
+export function UnWrap<T>(data: T) {
+    return (data as ValueWrapper<T>).value as T;
 }
 export function decodeProtoBuf<T>(typeName: string, message: any, fieldNo: number, wireType: WireType, data: Uint8Array, encodeBytes?: (data: Uint8Array) => T) {
     let value;
