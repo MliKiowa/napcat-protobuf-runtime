@@ -19,7 +19,7 @@ pb-ts runtime/pb-js runtime 各种库类型提取困难 基于runtime编写困�
 - [x] 提供PB结构序列化JSON/JS对象
 - [x] 规避类型type-orm库存在的属性默认值问题
 - [x] 运行时动态扩展PB字段
-- [ ] 在没有ProtoBuf结构的情况下动态盲解编码ProtoBuf数据
+- [ ] 在没有ProtoBuf结构的情况下动态盲编码ProtoBuf数据
 
 ## 缺点
 proxy + 套嵌 存在性能损失 但是我写的舒服就行了.jpg
