@@ -1,4 +1,4 @@
-import { PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, UnWrap } from "./protobuf.ts";
+import { PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, proxyClassProtobuf, UnWrap } from "./protobuf.ts";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
@@ -107,6 +107,22 @@ export function normalDecode() {
     let data = new Uint8Array(Buffer.from('0a042a022525', 'hex'))
     console.log("无protobuf盲解:", JSON.stringify(ProtoBufDecode(data), null, 2));
 }
+
+class TestClass extends ProtoBufBase {
+    push<T>(data: T) {
+        Object.assign(this, data);
+        return this;
+    }
+}
+export function nodeEncode() {
+    let data = new TestClass()
+        .push({ uin: PBString(1, false, '123456') })
+        .push({ uid: PBString(2, false, '123456') })
+        .push({ name: PBString(3, false, '123456') })
+    // 演示链式组包
+    let pb_data = proxyClassProtobuf(data).encode();
+    console.log("链式组包:", Buffer.from(pb_data).toString('hex'));
+}
 testSerialization();
 testDeserialization();
 testJsonSerialization();
@@ -114,3 +130,4 @@ testQuickSerialization();
 testFunctionSerialization();
 testFunctionDeserialization();
 normalDecode();
+nodeEncode();
