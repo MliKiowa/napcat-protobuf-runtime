@@ -339,9 +339,11 @@ export function ProtoBuf<T extends ProtoBufBase>(data: number | (new () => T), v
     dataClass._fieldId = typeof data === "number" ? data : 0;
     return dataClass;
 }
-export function ProtoBufEx<T extends ProtoBufBase, U extends ExtractSchema<T>>(valueClass: new () => T, value: U): T {
+export function ProtoBufEx<T extends ProtoBufBase, U extends ExtractSchema<T>>(valueClass: new () => T, value?: U): T {
     const dataClass = proxyClassProtobuf(new valueClass());
-    dataClass.assignFields(value);
+    if (value) {
+        dataClass.assignFields(value);
+    }
     return dataClass;
 }
 export function ProtoBufQuick<T extends {}, U extends T>(pb: T, data: U): ProtoBufBase {
@@ -420,4 +422,10 @@ export function ProtoBufDecode<T>(data: Uint8Array, encodeBytes?: (data: Uint8Ar
         readUnknownField: (typeName, message, fieldNo, wireType, data) => decodeProtoBuf(typeName, message, fieldNo, wireType, data, encodeBytes),
     });
     return decodedMessage;
+}
+export class ChainProto extends ProtoBufBase {
+    push<T>(data: T) {
+        Object.assign(this, data);
+        return this;
+    }
 }

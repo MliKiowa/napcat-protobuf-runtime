@@ -1,4 +1,4 @@
-import { PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, proxyClassProtobuf, UnWrap } from "./protobuf.ts";
+import { ChainProto, PBArray, PBBytes, PBString, PBUint32, ProtoBuf, ProtoBufBase, ProtoBufDecode, ProtoBufEx, ProtoBufIn, ProtoBufQuick, proxyClassProtobuf, UnWrap } from "./protobuf.ts";
 
 // 演示代码
 class ProtoBufDataInnerClass extends ProtoBufBase {
@@ -108,14 +108,9 @@ export function normalDecode() {
     console.log("无protobuf盲解:", JSON.stringify(ProtoBufDecode(data), null, 2));
 }
 
-class TestClass extends ProtoBufBase {
-    push<T>(data: T) {
-        Object.assign(this, data);
-        return this;
-    }
-}
-export function nodeEncode() {
-    let data = new TestClass()
+
+export function ChainProtoEncode() {
+    let data = new ChainProto()
         .push({ uin: PBString(1, false, '123456') })
         .push({ uid: PBString(2, false, '123456') })
         .push({ name: PBString(3, false, '123456') })
@@ -130,4 +125,4 @@ testQuickSerialization();
 testFunctionSerialization();
 testFunctionDeserialization();
 normalDecode();
-nodeEncode();
+ChainProtoEncode();
