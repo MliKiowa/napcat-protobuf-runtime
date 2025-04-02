@@ -293,7 +293,7 @@ export class ProtoBufBase {
 
     public decode(data: Uint8Array) {
         const pbData = new MessageType("message", this.generateFields()).fromBinary(data);
-        Object.assign(this, pbData);
+        this.assignFields(pbData as { [key: string]: unknown });
         return this;
     }
     public then(callback: (data: this) => void) {
